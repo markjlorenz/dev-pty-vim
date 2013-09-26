@@ -7,7 +7,8 @@ describe RegistrationServer do
     end
 
     let (:server_port)  { 2001 }
-    let (:server)       { RegistrationServer.new(server_port) }
+    let (:vim_rc)       { StringIO.new "colorscheme default" }
+    let (:server)       { RegistrationServer.new(server_port, vim_rc) }
     let (:client)       { TCPSocket.new('localhost', server_port) }
     let (:message)      { {notify_port: 9000}.to_json }
 
@@ -19,8 +20,7 @@ describe RegistrationServer do
       }
     end
 
-    it { should include('Time is') }
-
+    it { should include(vim_rc.string) }
   end
 end
 

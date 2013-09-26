@@ -7,12 +7,16 @@ Thread.abort_on_exception = true
 
 # Registration packet includes:
 #   notify_port: the port to send updates to
+#
+# Clients include:
+#   notify_adr: #host and #port
 class RegistrationServer
   attr_reader :clients
 
-  def initialize port=2000
-    @port = port
-    @loop = nil
+  def initialize port=2000, vim_rc=File.new("~/.vimrc")
+    @port    = port
+    @vim_rc  = vim_rc
+    @loop    = nil
     @clients = []
   end
 
@@ -36,11 +40,12 @@ class RegistrationServer
         @clients << client
         puts "Client connected: #{client.info}"
         puts "       with data: #{client.socket}"
-        raw_socket.puts "Time is #{Time.now}"
+        raw_socket.puts @vim_rc.read
         raw_socket.close
       end
     }
   end
+  private :register_observer
 
   AlreadyStarted = Class.new(StandardError)
 end
