@@ -1,0 +1,15 @@
+diff left.txt right.txt > diff.txt
+patch -o patched left.txt diff.txt
+
+# on file write diff old with new
+# send diff to peers
+
+# Session saves the window arrangement
+# wviminfo saves register contents and marks
+#save viminfo:
+ :wviminfo! tmp/viminfo
+ :mks!      tmp/session.vim
+
+#read viminfo:
+ :rviminfo! tmp/viminfo
+ :source    tmp/session.vim
