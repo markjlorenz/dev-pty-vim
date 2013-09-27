@@ -4,7 +4,7 @@ describe KeyListener do
   context "calls update proc when key are recived" do
     after do
       Thread.new do
-        listener
+        listener.start
       end
       Socket.tcp('localhost', port) {|client|
         client.write message

@@ -6,15 +6,13 @@ class KeyListener
   def initialize port, callback
     @port     = port
     @callback = callback
-    listen
   end
 
-  def listen
+  def start
     Thread.new do
       Socket.tcp_server_loop @port, &register_listener
     end
   end
-  private :listen
 
   def register_listener
     ->(raw_socket, client_info) {
