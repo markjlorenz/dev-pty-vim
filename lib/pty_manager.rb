@@ -62,5 +62,5 @@ class PtyManager
     File.unlink(@key_file) if File.exists?(@key_file)
   end
   private :clear_key_file
-  
+
 end

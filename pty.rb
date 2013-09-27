@@ -1,5 +1,6 @@
 #! /usr/bin/env ruby
 
+require_relative 'lib/app'
 require_relative 'lib/exit_by_pipe'
 require_relative 'lib/pty_manager'
 require_relative 'lib/options'
