@@ -4,7 +4,7 @@ Thread.abort_on_exception = true
 
 class KeyListener
   def initialize port, callback
-    @port = port
+    @port     = port
     @callback = callback
     listen
   end
