@@ -13,7 +13,7 @@ Thread.abort_on_exception = true
 class RegistrationServer
   attr_reader :clients
 
-  def initialize port=2000, vim_rc=File.new("~/.vimrc")
+  def initialize port=2000, vim_rc=File.new(File.expand_path "~/.vimrc")
     @port    = port
     @vim_rc  = vim_rc
     @loop    = nil

@@ -1,25 +1,17 @@
 #! /usr/bin/env ruby
-require 'pty'
-require 'io/console'
-require 'stringio'
+
 require_relative 'lib/exit_by_pipe'
+require_relative 'lib/pty_manager'
+require_relative 'lib/options'
 
-pty_m, pty_s  = PTY.open
-key_file      = 'tmp/keys'
-vim_pid       = spawn("vim", in: pty_s, out: STDOUT)
-File.unlink(key_file) if File.exists?(key_file)
+Thread.abort_on_exception = true
 
-# Synchronize new client with past events
-if ARGV[0]
-  IO.copy_stream ARGV[0], pty_m
-end
-
-Thread.new do
-  loop do
-    char = STDIN.getch
-    File.open(key_file, 'a') { |f| f.putc char }
-    pty_m << char
-  end
-end
+opt = Options.parse!
+PtyManager.new opt.registration_port, opt.key_port, opt.key_file, opt.vim_rc
 
 ExitByPipe.join 'kill'
+
+# Synchronize new client with past events
+#if ARGV[0]
+  #IO.copy_stream ARGV[0], pty_m
+#end
