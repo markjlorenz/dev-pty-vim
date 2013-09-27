@@ -3,9 +3,9 @@ require 'socket'
 Thread.abort_on_exception = true
 
 class KeySender
-  def initialize clients, keys
+  def initialize clients, key
     @clients = clients
-    @keys    = keys
+    @key    = key
   end
 
   def send
@@ -16,7 +16,7 @@ class KeySender
     ->(client){
       notify_adr = [ client.notify_adr.host, client.notify_adr.port ]
       Socket.tcp(*notify_adr) do |client_socket|
-        client_socket.write @keys
+        client_socket.write @key
         client_socket.close_write
       end
     }
