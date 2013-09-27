@@ -7,7 +7,7 @@ require_relative 'lib/options'
 Thread.abort_on_exception = true
 
 opt = Options.parse!
-PtyManager.new opt.registration_port, opt.key_port, opt.key_file, opt.vim_rc
+PtyManager.new(opt.registration_port, opt.key_port, opt.key_file, opt.vim_rc).start
 
 ExitByPipe.join 'kill'
 

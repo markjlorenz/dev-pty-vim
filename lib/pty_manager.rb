@@ -13,7 +13,10 @@ class PtyManager
     @vim_rc              = File.new(vim_rc)
     @registration_server = RegistrationServer.new(registration_port, @vim_rc)
     @key_listener        = KeyListener.new(key_port, remote_key_callback)
+  end
 
+  def start
+    spawn_vim
     start_key_control_loop
     @registration_server.start
     @key_listener.start
@@ -29,6 +32,7 @@ class PtyManager
       end
     } 
   end
+  private :start_key_control_loop
 
   def remote_key_callback
     ->(key){
@@ -36,6 +40,7 @@ class PtyManager
       @pty_m << key
     }
   end
+  private :remote_key_callback
 
   def save_key key
     File.open(@key_file, 'a') { |f| f.putc key }
@@ -56,5 +61,6 @@ class PtyManager
   def clear_key_file
     File.unlink(@key_file) if File.exists?(@key_file)
   end
+  private :clear_key_file
   
 end
