@@ -4,6 +4,9 @@ require 'io/console'
 require_relative 'key_listener'
 require_relative 'key_sender'
 require_relative 'registration_server'
+require_relative 'vim_communication'
+
+Thread.abort_on_exception = true
 
 class PtyManager
   def initialize(registration_port, key_port, key_file, vim_rc)
@@ -13,6 +16,7 @@ class PtyManager
     @vim_rc              = File.new(vim_rc)
     @registration_server = RegistrationServer.new(registration_port, @vim_rc)
     @key_listener        = KeyListener.new(key_port, remote_key_callback)
+    @communicion         = VimCommunication.new
   end
 
   def start
@@ -20,6 +24,7 @@ class PtyManager
     start_key_control_loop
     @registration_server.start
     @key_listener.start
+    @communicion.start
   end
 
   def start_key_control_loop
