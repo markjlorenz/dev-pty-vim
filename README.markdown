@@ -14,6 +14,42 @@
   - The ruby server intercepts keystrokes (reading them from stdin).
   - Key strokes are the forwared to the local VIM and broadcast to remote listeners.
 
+## Getting Started:
+  - On Player1: 
+  ```bash
+    ./dev-pty-vim -p2004 -r2005
+  ```
+
+  - On Player2:
+  ```bash
+    ./dev-pty-vim
+
+    # 2001 is the default key sender port.
+    # 2000 is the default registration server port.
+  ```
+
+  - On Player2 (in another terminal):
+  ```bash
+    ./scripts/listen_to -r localhost -p 2005
+
+    # The `-r` option is localhost because here we're all local, a remote hosts is more realistic.
+    # The `-p` option should be the port of the registration server for the remote we want to listen to.
+  ```
+
+  - *Player2 now mirrors everything Player1 does*
+
+  - For a two-way share, Player1 also needs to:
+  ```bash
+    ./scripts/listen_to -r localhost -p 2000
+  ```
+
+  - *Player1 now mirrors everything Player2 does too.  Yay, pair programming!*
+
+  - Quitting:  You may have noticed that ctrl+c quits vim, but not dev/pty/vim.  To quit dev/pty/vim both players need to run:
+  ```bash
+    ./scripts/exit
+  ```
+
 ## Application Structure
 
   ```
