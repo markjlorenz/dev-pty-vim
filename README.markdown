@@ -8,7 +8,7 @@
   - Both users share a vim.rc configuration.
   - One or both users register to listen for key strokes from the other user.
   - Each key stroke is broadcast to listening users, as if you were sitting at the same computer.
-  - [Here's a animated demo](http://dapplebeforedawn.github.io/dev-pty-vim/)
+  - [Here's an animated demo](http://dapplebeforedawn.github.io/dev-pty-vim/)
 
 ## How's It Work:
   - Your VIM is loaded into a pseudo terminal running inside a ruby server.
