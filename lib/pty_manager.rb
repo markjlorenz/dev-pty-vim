@@ -16,7 +16,7 @@ class PtyManager
     @vim_rc              = File.new(vim_rc)
     @registration_server = RegistrationServer.new(registration_port, @vim_rc)
     @key_listener        = KeyListener.new(key_port, remote_key_callback)
-    @communicion         = VimCommunication.new
+    @communication       = VimCommunication.new @registration_server
   end
 
   def start
@@ -24,7 +24,7 @@ class PtyManager
     start_key_control_loop
     @registration_server.start
     @key_listener.start
-    @communicion.start
+    @communication.start
   end
 
   def start_key_control_loop
@@ -54,7 +54,8 @@ class PtyManager
 
   def send_key key
     clients = @registration_server.clients
-    KeySender.new clients, key
+    sender  = KeySender.new clients, key
+    sender.send
   end
   private :send_key
 

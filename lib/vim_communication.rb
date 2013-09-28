@@ -9,9 +9,12 @@ Thread.abort_on_exception = true
 #   "a_method_name": [method_arg1, method_arg2]
 # }
 class VimCommunication
+  include RPCInterface
 
-  def initialize
-    @vim_com_pipe = App.path.join('tmp', 'vim_com_pipe')
+  attr_reader :registration_server
+  def initialize registration_server
+    @registration_server = registration_server
+    @vim_com_pipe        = App.path.join('tmp', 'vim_com_pipe')
     setup_com_pipe
   end
   
@@ -26,7 +29,7 @@ class VimCommunication
   def process message
     commands = JSON.parse(message)
     commands.each do |method_name, args|
-      RPCInterface.public_send method_name.to_sym, *args
+      public_send method_name.to_sym, *args
     end
   end
 
