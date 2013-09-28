@@ -1,0 +1,28 @@
+#! /usr/bin/env ruby
+# dev/pty/vim sets up named pipe (aka fifo) for communicating with the server
+# Just write your instructions into the pipe, and they'll by slupred up by dev/pty/vim.
+# Format:
+#   method_name: [method_arg, method_arg]
+#
+# All this is necessiary becuase all the keystrokes are being captured and broadcast to
+# the cleints.  This way we can keep a server from telling cleints to connect to a third server.
+# 
+require 'optparse'
+require 'json'
+module Options
+  def self.parse!
+    options = OpenStruct.new host: 'localhost', port: 2001
+
+    OptionParser.new do |opts|
+      opts.on("-p", "--port=val", Integer) { |arg| options.port = arg }
+      opts.on("-r", "--host=val",  String) { |arg| options.host = arg }
+      opts.on("-h", "--help")              { exec "more #{__FILE__}"  }
+    end.parse!
+    options
+  end
+end
+
+options = Options.parse!
+command = { connect: [options.host, options.port] }
+
+File.write( 'tmp/vim_com_pipe', command.to_json)
