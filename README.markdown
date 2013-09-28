@@ -50,6 +50,16 @@
     ./scripts/exit
   ```
 
+## Caveats:
+Since dev/pty/vim is sending literal key strokes between the two players, it's essential that both players have the same vim configuration.  e.g. If Player1 has `<leader>` mapped to "," and Player2 has `<leader>` mapped to "\", when Player1 hits his `<leader>` key, Player2 will receive a ",".  Since Player2's leader is "\" the two sessions with get out of sync.
+
+The same goes for plugins, files on disk, and tabs/windows that were opened before the other player connected
+
+## Work in progress:
+  - Currently working on a .vimrc reconsiliation as part of the registration process to help some of the caveats.
+  - Currently working on a "catch-up replay" so if Player1 types before Player2 joins, Player2 will recieve and play all the catch-up commands as part of the registration process.
+  - Seriously, that stuff in `spec/key_listener_spec.rb` is pissing me off.
+
 ## Application Structure
 
   ```
@@ -81,6 +91,18 @@
       ├── kill
       └── vim_com_pipe
   ```
+
+## Running the Tests:
+```bash
+  rspec
+  
+  # Or run an indiviual spec:
+  rspec spec/key_listener_spec.rb
+```
+
+## Support:
+  - File a bug here
+  - Contact me on twitter/email : @soodesune/markjlorenz@gmail.com
 
 ## Obligatory Recursive Joke:
 > Yo dawg, anyone want to pair with me on my pair programming program?
