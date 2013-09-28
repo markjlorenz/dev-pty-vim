@@ -1,7 +1,7 @@
 # /dev/pty/vim
 > VIM pair programming without raster graphics.
 > Desktop sharing is for windows devs!
-> Tmux!? Who want's to set that all up (not me).
+> Tmux!? Who wants to set that all up (not me).
 
 ## What's It Do:
   - Both users run their own VIM locally.
@@ -36,7 +36,7 @@
   │   ├── exit                    # Quit dev.pyt.vim
   │   └── listen_to               # Contact a registration server, and start listening to key stokes
   ├── spec
-  │   ├── key_listener_spec.rb
+  │   ├── key_listener_spec.rb    # _I could use some help here_
   │   ├── key_sender_spec.rb
   │   ├── registration_server_spec.rb
   │   └── vim_communication_spec.rb
