@@ -6,18 +6,21 @@ require 'uri'
 Thread.abort_on_exception = true
 
 # Registration packet includes:
-#   notify_port: the port to send updates to
+#     notify_port: the port to send updates to
+#   register_port: the port to register with this client
 #
 # Clients include:
+#   notify_adr: #host and #port
 #   notify_adr: #host and #port
 class RegistrationServer
   attr_reader :clients
 
-  def initialize port=2000, vim_rc=File.new(File.expand_path "~/.vimrc")
-    @port    = port
-    @vim_rc  = vim_rc
-    @loop    = nil
-    @clients = []
+  def initialize port=2000, vim_rc=File.new(File.expand_path "~/.vimrc"), callback= ->(client){}
+    @port     = port
+    @vim_rc   = vim_rc
+    @loop     = nil
+    @clients  = []
+    @callback = callback
   end
 
   def start
@@ -32,16 +35,16 @@ class RegistrationServer
       Thread.new do
         socket = OpenStruct.new JSON.parse(raw_socket.read)
         client = OpenStruct.new({ 
-            socket: socket,
-              info: Socket.unpack_sockaddr_in(client_info),
-        notify_adr: URI::HTTP.build(host: client_info.ip_address, port: socket.notify_port)
+              socket: socket,
+                info: Socket.unpack_sockaddr_in(client_info),
+          notify_adr: URI::HTTP.build(host: client_info.ip_address, port: socket.notify_port),
+        register_adr: URI::HTTP.build(host: client_info.ip_address, port: socket.register_port)
         })
 
         @clients << client
-        puts "Client connected: #{client.info}"
-        puts "       with data: #{client.socket}"
         raw_socket.puts @vim_rc.read
         raw_socket.close
+        @callback[client]
       end
     }
   end
