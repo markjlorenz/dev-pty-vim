@@ -16,9 +16,11 @@ class PtyManager
     @vim_rc_path         = vim_rc
     @vim_rc              = File.new(vim_rc)
     @vim_interface       = VimInterface.new pty_m
-    @registration_server = RegistrationServer.new registration_port, @vim_rc, registration_callback
+    @registration_server = RegistrationServer.new registration_port, @vim_rc
     @key_listener        = KeyListener.new(key_port, remote_key_callback)
     @communication       = CommandInterface.new @registration_server
+
+    register_callbacks
   end
 
   def start
@@ -49,12 +51,12 @@ class PtyManager
   end
   private :remote_key_callback
 
-  def registration_callback
-    ->(client){
+  def register_callbacks
+    @registration_server.on :connection, ->(client) {
       @vim_interface << ":echo 'A new client connected! -- #{client.register_adr}'\n"
     }
   end
-  private :registration_callback
+  private :register_callbacks
 
   def save_key key
     File.open(@key_file, 'a') { |f| f.putc key }

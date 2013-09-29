@@ -15,12 +15,14 @@ Thread.abort_on_exception = true
 class RegistrationServer
   attr_reader :clients
 
-  def initialize port=2000, vim_rc=File.new(File.expand_path "~/.vimrc"), callback= ->(client){}
+  def initialize port=2000, vim_rc=File.new(File.expand_path "~/.vimrc")
     @port     = port
     @vim_rc   = vim_rc
     @loop     = nil
     @clients  = []
-    @callback = callback
+    @events   = {
+      connection: ->(client){}
+    }
   end
 
   def start
@@ -28,6 +30,17 @@ class RegistrationServer
     @loop = Thread.new do
       Socket.tcp_server_loop @port, &register_observer
     end
+  end
+
+  def on event, lamb
+    raise UnknownEvent unless @events.has_key?(event)
+    @events[event] = lamb
+  end
+  
+  # Look of a suitable callable in the @events hash
+  # else, fail
+  def method_missing name, *args
+    @events.fetch(name){ super }[*args] 
   end
 
   def register_observer
@@ -44,11 +57,12 @@ class RegistrationServer
         @clients << client
         raw_socket.puts @vim_rc.read
         raw_socket.close
-        @callback[client]
+        connection(client)
       end
     }
   end
   private :register_observer
 
   AlreadyStarted = Class.new(StandardError)
+  UnknownEvent   = Class.new(StandardError)
 end
