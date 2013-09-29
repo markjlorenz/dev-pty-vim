@@ -11,7 +11,7 @@ Thread.abort_on_exception = true
 
 class PtyManager
   def initialize(registration_port, key_port, key_file, vim_rc)
-    pty_m, @pty_s       = PTY.open
+    pty_m, @pty_s        = PTY.open
     @key_file            = key_file
     @vim_rc_path         = vim_rc
     @vim_rc              = File.new(vim_rc)
