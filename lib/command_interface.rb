@@ -8,7 +8,7 @@ Thread.abort_on_exception = true
 # {
 #   "a_method_name": [method_arg1, method_arg2]
 # }
-class VimCommunication
+class CommandInterface
   include RPCInterface
 
   attr_reader :registration_server

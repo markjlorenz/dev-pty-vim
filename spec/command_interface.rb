@@ -1,7 +1,7 @@
 require 'json'
-require_relative '../lib/vim_communication'
+require_relative '../lib/command_interface'
 
-describe VimCommunication do
+describe CommandInterface do
   context "responding to a comunique" do
     after do 
       communicator.start
@@ -9,7 +9,7 @@ describe VimCommunication do
     end
 
     let(:message)      { { target_meth => [] }.to_json }
-    let(:communicator) { VimCommunication.new }
+    let(:communicator) { described_class.new }
     let(:target)       { RPCInterface.stub(target_meth) }
     let(:target_meth)  { :test_method }
     

@@ -4,19 +4,21 @@ require 'io/console'
 require_relative 'key_listener'
 require_relative 'key_sender'
 require_relative 'registration_server'
-require_relative 'vim_communication'
+require_relative 'command_interface'
+require_relative 'vim_interface'
 
 Thread.abort_on_exception = true
 
 class PtyManager
   def initialize(registration_port, key_port, key_file, vim_rc)
-    @pty_m, @pty_s       = PTY.open
+    pty_m, @pty_s       = PTY.open
     @key_file            = key_file
     @vim_rc_path         = vim_rc
     @vim_rc              = File.new(vim_rc)
     @registration_server = RegistrationServer.new(registration_port, @vim_rc)
     @key_listener        = KeyListener.new(key_port, remote_key_callback)
-    @communication       = VimCommunication.new @registration_server
+    @communication       = CommandInterface.new @registration_server
+    @vim_interface       = VimInterface.new pty_m
   end
 
   def start
@@ -33,7 +35,7 @@ class PtyManager
         char = STDIN.getch
         save_key  char
         send_key  char
-        @pty_m << char
+        @vim_interface << char
       end
     } 
   end
@@ -42,7 +44,7 @@ class PtyManager
   def remote_key_callback
     ->(key){
       save_key  key
-      @pty_m << key
+      @vim_interface << key
     }
   end
   private :remote_key_callback
