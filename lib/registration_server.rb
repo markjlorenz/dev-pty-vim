@@ -3,6 +3,8 @@ require 'ostruct'
 require 'json'
 require 'uri'
 
+require_relative 'promise'
+
 Thread.abort_on_exception = true
 
 # Registration packet includes:
@@ -13,6 +15,7 @@ Thread.abort_on_exception = true
 #   notify_adr: #host and #port
 #   notify_adr: #host and #port
 class RegistrationServer
+  include DelegatePromises
   attr_reader :clients
 
   def initialize port=2000, vim_rc=File.new(File.expand_path "~/.vimrc")
@@ -20,9 +23,8 @@ class RegistrationServer
     @vim_rc   = vim_rc
     @loop     = nil
     @clients  = []
-    @events   = {
-      connection: [ ->(client){} ]
-    }
+
+    @promises  = Promise.new connection: [ ->(client){} ]
   end
 
   def start
@@ -31,20 +33,6 @@ class RegistrationServer
       Socket.tcp_server_loop @port, &register_observer
     end
   end
-
-  def on event, lamb
-    raise UnknownEvent unless @events.has_key?(event)
-    @events[event] << lamb
-  end
-  
-  # Look of a suitable callable in the @events hash
-  # else, fail
-  def method_missing name, *args
-    @events.fetch(name){ super }.each do |lamb|
-      lamb[*args] 
-    end
-  end
-  private :method_missing
 
   def register_observer
     ->(raw_socket, client_info) {
@@ -60,12 +48,11 @@ class RegistrationServer
         @clients << client
         raw_socket.puts @vim_rc.read
         raw_socket.close
-        connection(client)
+        promises.connection(client)
       end
     }
   end
   private :register_observer
 
   AlreadyStarted = Class.new(StandardError)
-  UnknownEvent   = Class.new(StandardError)
 end

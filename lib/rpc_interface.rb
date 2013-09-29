@@ -1,4 +1,5 @@
 require 'socket'
+require 'uri'
 
 module RPCInterface
   def connect registration_host, port
@@ -10,6 +11,9 @@ module RPCInterface
     Socket.tcp(registration_host, port) { |socket|
       socket.write message
       socket.close_write
+
+      to = URI::HTTP.build(host: registration_host, port: port)
+      promises.connected(to, socket.read)
     }
   end
 

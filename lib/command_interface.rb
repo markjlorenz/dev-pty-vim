@@ -1,6 +1,7 @@
 require 'json'
 require_relative 'app'
 require_relative 'rpc_interface'
+require_relative 'promise'
 
 Thread.abort_on_exception = true
 
@@ -10,11 +11,14 @@ Thread.abort_on_exception = true
 # }
 class CommandInterface
   include RPCInterface
+  include DelegatePromises
 
   attr_reader :registration_server
   def initialize registration_server
     @registration_server = registration_server
     @vim_com_pipe        = App.path.join('tmp', 'vim_com_pipe')
+    @promises            = Promise.new connected: [ ->(server, vimrc){} ]
+
     setup_com_pipe
   end
   
@@ -42,5 +46,6 @@ class CommandInterface
     at_exit { File.unlink(@vim_com_pipe) if File.exists?(@vim_com_pipe) }
   end
   private :setup_com_pipe
+
 end
 
