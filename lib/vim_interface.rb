@@ -13,6 +13,8 @@ class VimInterface
   alias :<< :push
 
   def start_worker
-    @pty_m << queue.pop
+    Thread.new do
+      loop { @pty_m << @queue.pop }
+    end
   end
 end
