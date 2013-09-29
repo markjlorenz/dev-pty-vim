@@ -21,7 +21,7 @@ class RegistrationServer
     @loop     = nil
     @clients  = []
     @events   = {
-      connection: ->(client){}
+      connection: [ ->(client){} ]
     }
   end
 
@@ -34,13 +34,15 @@ class RegistrationServer
 
   def on event, lamb
     raise UnknownEvent unless @events.has_key?(event)
-    @events[event] = lamb
+    @events[event] << lamb
   end
   
   # Look of a suitable callable in the @events hash
   # else, fail
   def method_missing name, *args
-    @events.fetch(name){ super }[*args] 
+    @events.fetch(name){ super }.each do |lamb|
+      lamb[*args] 
+    end
   end
   private :method_missing
 
