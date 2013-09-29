@@ -16,9 +16,8 @@ class PtyManager
     pty_m, @pty_s        = PTY.open
     @key_file            = opt.key_file
     @vim_rc_path         = opt.vim_rc
-    @vim_rc              = File.new(opt.vim_rc)
     @vim_interface       = VimInterface.new pty_m
-    @registration_server = RegistrationServer.new opt.registration_port, @vim_rc
+    @registration_server = RegistrationServer.new opt.registration_port, @vim_rc_path
     @key_listener        = KeyListener.new(opt.key_port, remote_key_callback)
     @communication       = CommandInterface.new @registration_server
 
@@ -59,11 +58,9 @@ class PtyManager
     }
 
     @communication.on :connected, ->(server, vimrc) {
-      remote_vim_rc_path = App.path.join("tmp", server.host)
-      remote_vim_rc      = File.new(remote_vim_rc_path, 'w')
-      remote_vim_rc.write vimrc
-      remote_vim_rc.close
-      @registration_server.vim_rc = remote_vim_rc # Serve up the new vimrc instead
+      remote_vim_rc_path = App.path.join("tmp", "#{server.host}:#{server.port}")
+      File.write(remote_vim_rc_path, vimrc)
+      @registration_server.vim_rc = remote_vim_rc_path # Serve up the new vimrc instead
       @vim_interface << ":qa!\n"                  # bye-bye vim
       spawn_vim(remote_vim_rc_path)               # come back with a new vimrc
       @vim_interface << ":echo 'Connected to server! -- #{server}'\n"
@@ -84,8 +81,8 @@ class PtyManager
   private :send_key
 
   def spawn_vim(vim_rc=@vim_rc_path)
-    puts vim_rc
     spawn("vim -u #{vim_rc}", in: @pty_s, out: STDOUT)
+    sleep 0.1 # give it a moment to boot
   end
   private :spawn_vim
 

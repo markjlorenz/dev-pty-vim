@@ -16,16 +16,14 @@ Thread.abort_on_exception = true
 #   notify_adr: #host and #port
 class RegistrationServer
   include DelegatePromises
-  attr_reader :clients
-  attr_writer :vim_rc
+  attr_reader   :clients
 
-  def initialize port=2000, vim_rc=File.new(File.expand_path "~/.vimrc")
-    @port     = port
-    @vim_rc   = vim_rc
-    @loop     = nil
-    @clients  = []
-
-    @promises  = Promise.new connection: [ ->(client){} ]
+  def initialize port=2000, vim_rc=File.expand_path("~/.vimrc")
+    @port       = port
+    self.vim_rc = vim_rc
+    @loop       = nil
+    @clients    = []
+    @promises   = Promise.new connection: [ ->(client){} ]
   end
 
   def start
@@ -33,6 +31,10 @@ class RegistrationServer
     @loop = Thread.new do
       Socket.tcp_server_loop @port, &register_observer
     end
+  end
+
+  def vim_rc= path
+    @vim_rc = File.new(path)
   end
 
   def register_observer
