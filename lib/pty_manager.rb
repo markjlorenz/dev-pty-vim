@@ -59,10 +59,13 @@ class PtyManager
     }
 
     @communication.on :connected, ->(server, vimrc) {
-      remote_vim_rc = App.path.join("tmp", server.host)
-      File.write( remote_vim_rc, vimrc )
-      @vim_interface << ":set all&\n" # reset vim to factory defaults
-      @vim_interface << ":source #{remote_vim_rc}\n" # apply the servers vimrc
+      remote_vim_rc_path = App.path.join("tmp", server.host)
+      remote_vim_rc      = File.new(remote_vim_rc_path, 'w')
+      remote_vim_rc.write vimrc
+      remote_vim_rc.close
+      @registration_server.vim_rc = remote_vim_rc # Serve up the new vimrc instead
+      @vim_interface << ":qa!\n"                  # bye-bye vim
+      spawn_vim(remote_vim_rc_path)               # come back with a new vimrc
       @vim_interface << ":echo 'Connected to server! -- #{server}'\n"
     }
   end
@@ -80,8 +83,9 @@ class PtyManager
   end
   private :send_key
 
-  def spawn_vim
-    spawn("vim", in: @pty_s, out: STDOUT)
+  def spawn_vim(vim_rc=@vim_rc_path)
+    puts vim_rc
+    spawn("vim -u #{vim_rc}", in: @pty_s, out: STDOUT)
   end
   private :spawn_vim
 

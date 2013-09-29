@@ -17,6 +17,7 @@ Thread.abort_on_exception = true
 class RegistrationServer
   include DelegatePromises
   attr_reader :clients
+  attr_writer :vim_rc
 
   def initialize port=2000, vim_rc=File.new(File.expand_path "~/.vimrc")
     @port     = port

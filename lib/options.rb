@@ -2,7 +2,7 @@ require 'optparse'
 module Options
   def self.parse!
     options = OpenStruct.new  key_file: 'tmp/keys', key_port: 2001,
-                     registration_port: 2000,         vim_rc: File.new(File.expand_path '~/.vimrc')
+                     registration_port: 2000,         vim_rc: File.expand_path('~/.vimrc')
 
     OptionParser.new do |opts|
       opts.on("-f", "--key_file=val",           String) { |arg| options.key_file          = arg }
