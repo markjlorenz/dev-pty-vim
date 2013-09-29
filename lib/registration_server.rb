@@ -42,6 +42,7 @@ class RegistrationServer
   def method_missing name, *args
     @events.fetch(name){ super }[*args] 
   end
+  private :method_missing
 
   def register_observer
     ->(raw_socket, client_info) {
