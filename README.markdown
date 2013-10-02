@@ -3,6 +3,9 @@
 > Desktop sharing is for windows devs!
 > Tmux!? Who wants to set that all up (not me).
 
+## Obligatory Recursive Joke:
+> Yo dawg, anyone want to pair with me on my pair programming program?
+
 ## What's It Do:
   - Both users run their own VIM locally.
   - Both users share a vim.rc configuration.
@@ -104,6 +107,3 @@ The same goes for plugins, files on disk, and tabs/windows that were opened befo
 ## Support:
   - File a bug here
   - Contact me on twitter/email : @soodesune/markjlorenz@gmail.com
-
-## Obligatory Recursive Joke:
-> Yo dawg, anyone want to pair with me on my pair programming program?
