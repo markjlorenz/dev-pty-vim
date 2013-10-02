@@ -35,6 +35,7 @@ class RegistrationServer
             socket: socket,
               info: Socket.unpack_sockaddr_in(client_info),
         notify_adr: URI::HTTP.build(host: client_info.ip_address, port: socket.notify_port)
+        #URI::HTTP bombs out on IPv6? (you'll see "bad component(expected host component): ::1" in the specs)
         })
 
         @clients << client
