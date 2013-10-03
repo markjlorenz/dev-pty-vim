@@ -34,8 +34,7 @@ class RegistrationServer
         client = OpenStruct.new({ 
             socket: socket,
               info: Socket.unpack_sockaddr_in(client_info),
-        notify_adr: URI::HTTP.build(host: client_info.ip_address, port: socket.notify_port)
-        #URI::HTTP bombs out on IPv6? (you'll see "bad component(expected host component): ::1" in the specs)
+        notify_adr: URI::HTTP.build(host: client_host(client_info), port: socket.notify_port)
         })
 
         @clients << client
@@ -47,6 +46,15 @@ class RegistrationServer
     }
   end
   private :register_observer
+
+  def client_host(client_info)
+    # URI::HTTP needs IPv6 address to be wrapped in square braces, (e.g. [::1]). but client_info.ip_address
+    # returns in like "::1" so we wrap it.
+    #
+    client_ip = client_info.ip_address
+    client_host = client_ip.match(/^::/) ? "[#{client_ip}]" : client_ip
+  end
+  private :client_host
 
   AlreadyStarted = Class.new(StandardError)
 end
