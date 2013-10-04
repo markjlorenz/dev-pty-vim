@@ -1,7 +1,7 @@
 require 'json'
-require_relative '../lib/vim_communication'
+require_relative '../lib/command_interface'
 
-describe VimCommunication do
+describe CommandInterface do
   context "responding to a comunique" do
     before do 
       communicator.stub target_meth

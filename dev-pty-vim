@@ -1,12 +1,10 @@
 #! /usr/bin/env ruby
 
-require_relative 'lib/app'
 require_relative 'lib/exit_by_pipe'
 require_relative 'lib/pty_manager'
 
 Thread.abort_on_exception = true
 
-opt = App.options
-PtyManager.new(opt.registration_port, opt.key_port, opt.key_file, opt.vim_rc).start
+PtyManager.new.start
 
 ExitByPipe.join 'tmp/kill'

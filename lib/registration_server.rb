@@ -3,21 +3,27 @@ require 'ostruct'
 require 'json'
 require 'uri'
 
+require_relative 'promise'
+
 Thread.abort_on_exception = true
 
 # Registration packet includes:
-#   notify_port: the port to send updates to
+#     notify_port: the port to send updates to
+#   register_port: the port to register with this client
 #
 # Clients include:
 #   notify_adr: #host and #port
+#   notify_adr: #host and #port
 class RegistrationServer
-  attr_reader :clients
+  include DelegatePromises
+  attr_reader   :clients
 
-  def initialize port=2000, vim_rc=File.new(File.expand_path "~/.vimrc")
-    @port    = port
-    @vim_rc  = vim_rc
-    @loop    = nil
-    @clients = []
+  def initialize port=2000, vim_rc=File.expand_path("~/.vimrc")
+    @port       = port
+    self.vim_rc = vim_rc
+    @loop       = nil
+    @clients    = []
+    @promises   = Promise.new connection: [ ->(client){} ]
   end
 
   def start
@@ -27,6 +33,10 @@ class RegistrationServer
     end
   end
 
+  def vim_rc= path
+    @vim_rc = File.new(path)
+  end
+
   def register_observer
     ->(raw_socket, client_info) {
       Thread.new do
@@ -34,14 +44,14 @@ class RegistrationServer
         client = OpenStruct.new({ 
             socket: socket,
               info: Socket.unpack_sockaddr_in(client_info),
-        notify_adr: URI::HTTP.build(host: client_host(client_info), port: socket.notify_port)
+        notify_adr: URI::HTTP.build(host: client_host(client_info), port: socket.notify_port),
+      register_adr: URI::HTTP.build(host: client_host(client_info), port: socket.register_port)
         })
 
         @clients << client
-        puts "Client connected: #{client.info}"
-        puts "       with data: #{client.socket}"
         raw_socket.puts @vim_rc.read
         raw_socket.close
+        promises.connection(client)
       end
     }
   end
