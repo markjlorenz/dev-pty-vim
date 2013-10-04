@@ -44,7 +44,7 @@ class RegistrationServer
         client = OpenStruct.new({ 
             socket: socket,
               info: Socket.unpack_sockaddr_in(client_info),
-        notify_adr: URI::HTTP.build(host: client_host(client_info), port: socket.notify_port)
+        notify_adr: URI::HTTP.build(host: client_host(client_info), port: socket.notify_port),
       register_adr: URI::HTTP.build(host: client_host(client_info), port: socket.register_port)
         })
 
