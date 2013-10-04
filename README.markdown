@@ -22,6 +22,8 @@
   - On Player1: 
   ```bash
     ./dev-pty-vim -p2004 -r2005
+
+    # protip: use the -c option and specify a minimal .vimrc
   ```
 
   - On Player2:
@@ -60,40 +62,41 @@ Since dev/pty/vim is sending literal key strokes between the two players, it's e
 The same goes for plugins, files on disk, and tabs/windows that were opened before the other player connected
 
 ## Work in progress:
-  - Currently working on a .vimrc reconsiliation as part of the registration process to help some of the caveats.
+  - ~~Currently working on a .vimrc reconsiliation as part of the registration process to help some of the caveats.~~ **Now works**
   - Currently working on a "catch-up replay" so if Player1 types before Player2 joins, Player2 will recieve and play all the catch-up commands as part of the registration process.
-  - Seriously, that stuff in `spec/key_listener_spec.rb` is pissing me off.
+  - Seriously, that stuff in `spec/registration_server_spec.rb` is pissing me off. How do you test threaded code in Ruby?
 
 ## Application Structure
 
   ```
   ├── README.markdown             # You are here
+  ├── dev-pty-vim                 # The launcher
   ├── lib
   │   ├── app.rb                  # Global read-only access to config
-  │   ├── exit_by_pipe.rb         # Allows you to quit
-  │   ├── key_listener.rb         # Listens for key strokes from remotes
-  │   ├── key_sender.rb           # Sends your keystrokes to remotes
-  │   ├── options.rb              # Option parser
-  │   ├── pty_manager.rb          # Supervises all other classes (start here)
+  │   ├── command_interface.rb    # Supervises control commands, mixes in `rpc_interface`
+  │   ├── exit_by_pipe.rb         # Allows you to exit
+  │   ├── key_listener.rb         # Listens from keystrokes from remotes
+  │   ├── key_sender.rb           # Sends your keystrokes to remote
+  │   ├── options.rb              # Command line args parser
+  │   ├── promise.rb              # A semi-experimental implementation of promises
+  │   ├── pty_manager.rb          # dat imperative shell (start reviewing this class to see what's going on)
   │   ├── registration_server.rb  # Listens for requests from remotes to become a listener of this vim
   │   ├── rpc_interface.rb        # Methods for controlling dev.pty.vim, since all your key strokes go to vim
-  │   └── vim_communication.rb    # Supervises control commands, mixes in `rpc_interface`
-  |
-  ├── dev-pty-vim                 # The launcher
+  │   └── vim_interface.rb        # Interfaces with the running vim instance
   |
   ├── scripts                     # Convenience scripts for sending control commands
   │   ├── README.markdown
   │   ├── exit                    # Quit dev.pyt.vim
   │   └── listen_to               # Contact a registration server, and start listening to key stokes
+  |
   ├── spec
-  │   ├── key_listener_spec.rb    # _I could use some help here_
+  │   ├── key_listener_spec.rb    
+  │   ├── command_interface.rb
   │   ├── key_sender_spec.rb
-  │   ├── registration_server_spec.rb
-  │   └── vim_communication_spec.rb
-  ├── tmp
-      ├── keys                    # A log of _your_ keystokes
-      ├── kill
-      └── vim_com_pipe
+  │   ├── registration_server_spec.rb # _I could use some help here_
+  │   └── vim_interface_spec.rb
+  └── tmp
+      └── keys                    # A log of _your_ keystokes
   ```
 
 ## Running the Tests:
@@ -101,7 +104,7 @@ The same goes for plugins, files on disk, and tabs/windows that were opened befo
   rspec
   
   # Or run an indiviual spec:
-  rspec spec/key_listener_spec.rb
+  rspec spec/registration_server_spec.rb
 ```
 
 ## Support:

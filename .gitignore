@@ -1,2 +1,2 @@
-tmp/keys
-kill
+tmp/*
+!tmp/.gitignore
