@@ -25,6 +25,7 @@ describe KeyListener do
         client.write message
         client.close_write
       }
+      sleep 0.1
     end
     
   end

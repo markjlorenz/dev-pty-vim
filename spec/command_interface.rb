@@ -3,18 +3,22 @@ require_relative '../lib/command_interface'
 
 describe CommandInterface do
   context "responding to a comunique" do
-    after do 
-      communicator.start
-      File.write(communicator.path, message)
+    before do 
+      communicator.stub target_meth
     end
 
     let(:message)      { { target_meth => [] }.to_json }
-    let(:communicator) { described_class.new }
-    let(:target)       { RPCInterface.stub(target_meth) }
+    let(:registration) { double(RegistrationServer).as_null_object }
+    let(:communicator) { VimCommunication.new registration }
     let(:target_meth)  { :test_method }
     
-    subject { target }
-    it { should receive(target_meth) }
+    it "receives the message" do
+      communicator.should receive(target_meth) 
+      communicator.start
+      File.write(communicator.path, message)
+      sleep 0.1
+    end 
+
   end
 end
 

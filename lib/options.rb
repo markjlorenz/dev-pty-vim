@@ -14,5 +14,3 @@ module Options
     options
   end
 end
-
-File.new('/Users/markjlorenz/.vimrc')

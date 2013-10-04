@@ -42,10 +42,10 @@ class RegistrationServer
       Thread.new do
         socket = OpenStruct.new JSON.parse(raw_socket.read)
         client = OpenStruct.new({ 
-              socket: socket,
-                info: Socket.unpack_sockaddr_in(client_info),
-          notify_adr: URI::HTTP.build(host: client_info.ip_address, port: socket.notify_port),
-        register_adr: URI::HTTP.build(host: client_info.ip_address, port: socket.register_port)
+            socket: socket,
+              info: Socket.unpack_sockaddr_in(client_info),
+        notify_adr: URI::HTTP.build(host: client_host(client_info), port: socket.notify_port)
+      register_adr: URI::HTTP.build(host: client_host(client_info), port: socket.register_port)
         })
 
         @clients << client
@@ -56,6 +56,15 @@ class RegistrationServer
     }
   end
   private :register_observer
+
+  def client_host(client_info)
+    # URI::HTTP needs IPv6 address to be wrapped in square braces, (e.g. [::1]). but client_info.ip_address
+    # returns in like "::1" so we wrap it.
+    #
+    client_ip = client_info.ip_address
+    client_host = client_ip.match(/^::/) ? "[#{client_ip}]" : client_ip
+  end
+  private :client_host
 
   AlreadyStarted = Class.new(StandardError)
 end
