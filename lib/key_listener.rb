@@ -17,7 +17,7 @@ class KeyListener
   def register_listener
     ->(raw_socket, client_info) {
       Thread.new do
-        key = raw_socket.read
+        key = raw_socket.readchar
         @callback[key]
       end
     }
