@@ -103,7 +103,7 @@ The same goes for plugins, files on disk, and tabs/windows that were opened befo
 ```bash
   rspec
   
-  # Or run an indiviual spec:
+  # Or run an individual spec:
   rspec spec/registration_server_spec.rb
 ```
 

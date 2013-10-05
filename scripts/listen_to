@@ -6,7 +6,7 @@
 #
 # All this is necessiary becuase all the keystrokes are being captured and broadcast to
 # the cleints.  This way we can keep a server from telling cleints to connect to a third server.
-# 
+#
 require 'optparse'
 require 'json'
 module Options
@@ -25,4 +25,4 @@ end
 options = Options.parse!
 command = { connect: [options.host, options.port] }
 
-File.write( 'tmp/vim_com_pipe', command.to_json)
+File.write( File.join(__dir__, '../', 'tmp/vim_com_pipe'), command.to_json )

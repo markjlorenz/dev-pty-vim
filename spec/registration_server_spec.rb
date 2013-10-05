@@ -18,7 +18,7 @@ describe RegistrationServer do
     let (:client)       { TCPSocket.new('localhost', server_port) }
     let (:message)      { {notify_port: 9000}.to_json }
 
-    subject do 
+    subject do
       Socket.tcp('localhost', server_port) {|client|
         client.write message
         client.close_write
@@ -31,9 +31,9 @@ describe RegistrationServer do
 
   context "calling an event" do
 
-    before do 
+    before do
       server.instance_variable_set "@vim_rc", vim_rc
-      server.on :connection, callback 
+      server.on :connection, callback
     end
 
     let (:server_port)  { 2001 }
@@ -43,7 +43,7 @@ describe RegistrationServer do
     # help!?  code behaves as expected, but tests fail
     let (:callback)     { ->(client){ raise "This is exactly what's supposed to be called.  Why U fail?"} } #little help?
     #let (:callback)     { ->(client){} }
-    
+
     it "receives call" do
       expect{ callback }.to receive(:[]).with(client)
       server.promises.connection client
