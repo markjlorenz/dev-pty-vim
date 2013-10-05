@@ -20,6 +20,7 @@ class PtyManager
     @registration_server = RegistrationServer.new opt.registration_port, @vim_rc_path
     @key_listener        = KeyListener.new(opt.key_port, remote_key_callback)
     @communication       = CommandInterface.new @registration_server
+    @key_sender          = KeySender.new []
 
     register_callbacks
   end
@@ -36,11 +37,11 @@ class PtyManager
     Thread.new {
       loop do
         char = STDIN.getch
-        save_key  char
         send_key  char
+        save_key  char
         @vim_interface << char
       end
-    } 
+    }
   end
   private :start_key_control_loop
 
@@ -55,6 +56,7 @@ class PtyManager
   def register_callbacks
     @registration_server.on :connection, ->(client) {
       @vim_interface << ":echo 'A new client connected! -- #{client.register_adr}'\n"
+      @key_sender     = KeySender.new @registration_server.clients
     }
 
     @communication.on :connected, ->(server, vimrc) {
@@ -74,15 +76,13 @@ class PtyManager
   private :save_key
 
   def send_key key
-    clients = @registration_server.clients
-    sender  = KeySender.new clients, key
-    sender.send
+    @key_sender.send key
   end
   private :send_key
 
   def spawn_vim(vim_rc=@vim_rc_path)
     spawn("vim -u #{vim_rc}", in: @pty_s, out: STDOUT)
-    sleep 0.1 # give it a moment to boot
+    sleep 0.2 # give it a moment to boot
   end
   private :spawn_vim
 

@@ -21,7 +21,7 @@ class CommandInterface
 
     setup_com_pipe
   end
-  
+
   def start
     Thread.new do
       loop {
