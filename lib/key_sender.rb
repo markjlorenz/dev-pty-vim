@@ -3,24 +3,33 @@ require 'socket'
 Thread.abort_on_exception = true
 
 class KeySender
-  def initialize clients, key
-    @clients = clients
-    @key    = key
+  def initialize clients
+    @clients     = clients
+    @connections = {}
+    connect_all
   end
 
-  def send
-    @clients.each &tcp_send
+  def send(key)
+    @clients.each &thread_send(key)
   end
 
-  def tcp_send
+  def connect_all
+    @connections = @clients.inject({}) do |memo, client|
+      notify_adr  = [ client.notify_adr.host, client.notify_adr.port ]
+      socket      = Socket.tcp(*notify_adr)
+      socket.sync = true
+      memo.update client => socket
+    end
+  end
+  private :connect_all
+
+  def thread_send(key)
     ->(client){
-      notify_adr = [ client.notify_adr.host, client.notify_adr.port ]
-      Socket.tcp(*notify_adr) do |client_socket|
-        client_socket.write @key
-        client_socket.close_write
-      end
+      Thread.new {
+        @connections[client].write key
+      }
     }
   end
-  private :tcp_send
+  private :thread_send
 
 end

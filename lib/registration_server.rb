@@ -41,7 +41,7 @@ class RegistrationServer
     ->(raw_socket, client_info) {
       Thread.new do
         socket = OpenStruct.new JSON.parse(raw_socket.read)
-        client = OpenStruct.new({ 
+        client = OpenStruct.new({
             socket: socket,
               info: Socket.unpack_sockaddr_in(client_info),
         notify_adr: URI::HTTP.build(host: client_host(client_info), port: socket.notify_port),

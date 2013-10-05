@@ -7,4 +7,4 @@ Thread.abort_on_exception = true
 
 PtyManager.new.start
 
-ExitByPipe.join 'tmp/kill'
+ExitByPipe.join File.join(__dir__, 'tmp/kill')
