@@ -37,8 +37,8 @@ class PtyManager
     Thread.new {
       loop do
         char = STDIN.getch
-        save_key  char
         send_key  char
+        save_key  char
         @vim_interface << char
       end
     }
