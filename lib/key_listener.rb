@@ -18,7 +18,7 @@ class KeyListener
     ->(raw_socket, client_info) {
       Thread.new do
         loop {
-          key = raw_socket.readchar
+          key = raw_socket.getc
           @callback[key]
         }
       end
