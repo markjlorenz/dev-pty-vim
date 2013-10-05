@@ -4,23 +4,33 @@ Thread.abort_on_exception = true
 
 class KeySender
   def initialize clients, key
-    @clients = clients
-    @key    = key
+    @clients     = clients
+    @key         = key
+    @connections = {}
+    connect_all
   end
 
   def send
-    @clients.each &tcp_send
+    @clients.each &thread_send
   end
 
-  def tcp_send
+  def connect_all
+    @connections = @clients.inject({}) do |memo, client|
+      notify_adr  = [ client.notify_adr.host, client.notify_adr.port ]
+      socket      = Socket.tcp(*notify_adr)
+      socket.sync = true
+      memo.update client => socket
+    end
+  end
+
+  def thread_send
     ->(client){
-      notify_adr = [ client.notify_adr.host, client.notify_adr.port ]
-      Socket.tcp(*notify_adr) do |client_socket|
-        client_socket.write @key
-        client_socket.close_write
-      end
+      Thread.new {
+        @connections[client].write @key
+        @connections[client].close_write
+      }
     }
   end
-  private :tcp_send
+  private :thread_send
 
 end

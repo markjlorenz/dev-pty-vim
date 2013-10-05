@@ -19,7 +19,6 @@ class KeyListener
       Thread.new do
         key = raw_socket.read
         @callback[key]
-        raw_socket.close
       end
     }
   end
