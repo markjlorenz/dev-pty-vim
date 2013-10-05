@@ -1,7 +1,7 @@
 require 'optparse'
 module Options
   def self.parse!
-    default_key_file = File.join(__dir__, 'tmp/keys')
+    default_key_file = File.join(__dir__, '../', 'tmp/keys')
     options = OpenStruct.new  key_file: default_key_file.to_s, key_port: 2001,
                      registration_port: 2000,                    vim_rc: File.expand_path('~/.vimrc')
 
